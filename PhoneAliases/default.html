@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>PhoneAliases</title>
+    
+    <script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
+    
+    <script type="text/javascript">
+        $(function () {
+
+            var page = null;
+            var totalPages = null;
+
+            function formatAlias(alias) {
+                var formattedAlias = alias.toUpperCase();
+                var phoneLength = alias.length;
+                //return formattedAlias;
+
+                switch (phoneLength) {
+                    case 10:
+                        formattedAlias = formattedAlias.substr(0, 3).toUpperCase() + " " + formattedAlias.substr(3, 3) + " " + formattedAlias.substr(6, 4);
+                        break;
+                    case 7:
+                        formattedAlias = formattedAlias.substr(0, 3).toUpperCase() + " " + formattedAlias.substr(3, 4);
+                        break;
+                default:
+                }
+
+                return formattedAlias;
+            }
+
+            function getAliases(phone, page) {
+
+                $('#btnGetPhoneAliases').prop('disabled', true);
+                $('#btnFirstPage').prop('disabled', true);
+                $('#btnPreviousPage').prop('disabled', true);
+                $('#btnNextPage').prop('disabled', true);
+                $('#btnLastPage').prop('disabled', true);
+
+
+                $.ajax({
+                        url: "http://localhost/PhoneAliasesService/api/v1/PhoneAliases",
+                        method: "POST",
+                        data: { phone: phone, page: page }
+                    })
+                    .done(function(jqXHR) {
+                        //alert("done");
+
+                        page = jqXHR["currentPageNumber"];
+
+                        var digitsOnlyPhone = jqXHR["digitsOnlyPhone"];
+
+                        var totalNumber = jqXHR["totalAliasesNumber"];
+                        $('#totalNumber').text(totalNumber);
+
+                        totalPages = jqXHR["numberOfPages"];
+                        $('#totalPages').text(totalPages);
+
+                        page = jqXHR["currentPageNumber"];
+                        $('#currentPage').text(page);
+
+                        var phoneAliasesHtml = "";
+                        var phoneAliases = jqXHR["aliases"];
+
+                        phoneAliases.forEach(function (alias) {
+                            var formattedAlias = formatAlias(alias);
+                            phoneAliasesHtml += formattedAlias + "<br />";
+                        });
+
+                        $('#phoneAliases').html(phoneAliasesHtml);
+
+                        $('#btnGetPhoneAliases').prop('disabled', false);
+                        $('#btnFirstPage').prop('disabled', false);
+                        $('#btnPreviousPage').prop('disabled', false);
+                        $('#btnNextPage').prop('disabled', false);
+                        $('#btnLastPage').prop('disabled', false);
+
+                    })
+                    .fail(function (jqXHR, textStatus) {
+                        page = null;
+                        alert("Request failed: " + textStatus);
+                    });
+            }
+
+            $('#phoneNumber').keyup(function () {
+                page = null;
+
+                if ($(this).val() === '') {
+                    $('#btnGetPhoneAliases').prop('disabled', true);
+                    $('#btnFirstPage').prop('disabled', true);
+                    $('#btnPreviousPage').prop('disabled', true);
+                    $('#btnNextPage').prop('disabled', true);
+                    $('#btnLastPage').prop('disabled', true);
+                } else {
+                    $('#btnGetPhoneAliases').prop('disabled', false);
+                    $('#btnFirstPage').prop('disabled', false);
+                    $('#btnPreviousPage').prop('disabled', false);
+                    $('#btnNextPage').prop('disabled', false);
+                    $('#btnLastPage').prop('disabled', false);
+                }
+            });
+
+            $('#btnGetPhoneAliases').click(function() {
+                var phone = $('#phoneNumber').val();
+                page = 1;
+                getAliases(phone, page);
+            });
+
+            $('#btnFirstPage').click(function() {
+                var phone = $('#phoneNumber').val();
+                page = 1;
+                getAliases(phone, page);
+            });
+
+            $('#btnPreviousPage').click(function() {
+                var phone = $('#phoneNumber').val();
+                if (page == null)
+                    page = 1;
+                else
+                    page = Math.max(page - 1, 1);
+                getAliases(phone, page);
+            });
+
+            $('#btnNextPage').click(function() {
+                var phone = $('#phoneNumber').val();
+                if ((page == null) || (totalPages == null))
+                    page = 1;
+                else
+                    page = Math.min(page + 1, totalPages);
+                getAliases(phone, page);
+            });
+
+            $('#btnLastPage').click(function() {
+                var phone = $('#phoneNumber').val();
+                if ((page == null) || (totalPages == null))
+                    page = 1;
+                else
+                    page = totalPages;
+                getAliases(phone, page);
+            });
+
+        });
+    </script>
+
+</head>
+<body>
+
+
+    <p>
+        <button type="button" id="btnFirstPage" disabled="disabled">&lt;&lt;</button>
+        <button type="button" id="btnPreviousPage" disabled="disabled">&lt;</button>
+        Page: <label id="currentPage"></label> of <label id="totalPages"></label>
+        <button type="button" id="btnNextPage" disabled="disabled">&gt;</button>
+        <button type="button" id="btnLastPage" disabled="disabled">&gt;&gt;</button>
+
+        <br /><br />
+        <br /><br />
+
+        <label for="phoneNumber">Phone number:</label> <input type="text" name="phoneNumber" id="phoneNumber" /> <button type="button" id="btnGetPhoneAliases" disabled="disabled">Get phone aliases</button>
+
+        <br /><br />
+
+        <label for="totalNumber">Total number of combinations:</label> <label id="totalNumber"></label>
+
+        <div id="phoneAliases"></div>
+
+    </p>
+
+
+</body>
+</html>

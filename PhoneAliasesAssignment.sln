@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29102.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhoneAliasesService", "PhoneAliasesService\PhoneAliasesService.csproj", "{C6A2AAD8-2E4A-4B0C-8B2D-5AF77FD50DA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhoneAliases", "PhoneAliases\PhoneAliases.csproj", "{44996F2F-7530-4CC8-8DB7-C3A9097C4C14}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C6A2AAD8-2E4A-4B0C-8B2D-5AF77FD50DA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6A2AAD8-2E4A-4B0C-8B2D-5AF77FD50DA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6A2AAD8-2E4A-4B0C-8B2D-5AF77FD50DA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6A2AAD8-2E4A-4B0C-8B2D-5AF77FD50DA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44996F2F-7530-4CC8-8DB7-C3A9097C4C14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44996F2F-7530-4CC8-8DB7-C3A9097C4C14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44996F2F-7530-4CC8-8DB7-C3A9097C4C14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44996F2F-7530-4CC8-8DB7-C3A9097C4C14}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B0EB6C2F-5135-41C2-8DB2-3C2B49288E6F}
+	EndGlobalSection
+EndGlobal
