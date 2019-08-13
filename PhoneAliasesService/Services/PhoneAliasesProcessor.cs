@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Web;
 using PhoneAliasesService.Models;
 
 namespace PhoneAliasesService.Services
@@ -16,6 +18,7 @@ namespace PhoneAliasesService.Services
     {
         private const string TenDigitPhonePattern = @"^\(?\d{3}\)?-? *\d{3}-? *-?\d{4}$";   // See https://stackoverflow.com/questions/18091324/regex-to-match-all-us-phone-number-formats
         private const string SevenDigitPhonePattern = @"^\d{3}-? *-?\d{4}$";
+        private static readonly int CacheExpirationMinutes = int.Parse(ConfigurationManager.AppSettings["cacheExpirationMinutes"]);
 
         private static readonly Dictionary<char, string[]> NumberAliases;
 
@@ -99,13 +102,22 @@ namespace PhoneAliasesService.Services
                 Aliases = new List<string>()
             };
 
-            var allPhoneAliases = new List<string>();
-
-            // ToDo: implement caching to avoid recalculating results on each call.
+            List<string> allPhoneAliases;
 
             if (!TryValidatePhone(rawPhone, out var phoneNumber)) return false;
 
-            allPhoneAliases = GetPartialPhoneAliasesList(phoneNumber);
+            // Caching to avoid recalculating results on each call.
+
+            string cacheKey = phoneNumber;
+            if (HttpContext.Current?.Cache.Get(cacheKey) is string cachedResult)
+                allPhoneAliases = cachedResult.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).ToList();
+            else
+            {
+                allPhoneAliases = GetPartialPhoneAliasesList(phoneNumber);
+                cachedResult = string.Join(", ", allPhoneAliases);
+                HttpContext.Current?.Cache.Insert(cacheKey, cachedResult, null,
+                    DateTime.Now.AddMinutes(CacheExpirationMinutes), System.Web.Caching.Cache.NoSlidingExpiration);
+            }
 
             int totalNumberOfAliases = allPhoneAliases.Count;
             int numberOfAliasesOnLastPage = totalNumberOfAliases % _pageSize;
